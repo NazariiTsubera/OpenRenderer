@@ -29,8 +29,10 @@ public:
     Scene(std::string  name) : name(std::move(name)) {}
     ~Scene() {}
 
-    Scene(Scene&) = default;
-    Scene& operator=(Scene& scene) = default;
+    Scene(const Scene&) = delete;
+    Scene& operator=(const Scene&) = delete;
+    Scene(Scene&&) noexcept = default;
+    Scene& operator=(Scene&&) noexcept = default;
 public:
     entt::entity CreateEntity(const std::string& name)
     {
@@ -67,6 +69,7 @@ public:
             if (camera.IsPrimary())
                 return entity;
         }
+        return entt::null;
     }
 
 
@@ -118,7 +121,6 @@ public:
     std::vector<entt::entity> GetEntitiesWithComponent() const
     {
         std::vector<entt::entity> result;
-        result.reserve(registry.size());
         for (entt::entity entity : registry.view<T>())
             result.push_back(entity);
         return result;

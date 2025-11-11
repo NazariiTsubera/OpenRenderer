@@ -95,9 +95,8 @@ namespace UI
     {
         ImGui::Begin("Render Stats");
 
-        ImGui::Text(std::string("Delta Time : " + std::to_string(frameStats.DeltaTime)).c_str());
-
-        ImGui::Text(std::string("FPS : " + std::to_string(1/frameStats.DeltaTime)).c_str());
+        ImGui::Text("%s", std::string("Delta Time : " + std::to_string(frameStats.DeltaTime)).c_str());
+        ImGui::Text("%s", std::string("FPS : " + std::to_string(1/frameStats.DeltaTime)).c_str());
 
         ImGui::End();
     }
@@ -129,7 +128,7 @@ namespace UI
                     Scene* scene = Application::GetInstance()->GetScene();
 
                     const char* savePath = tinyfd_saveFileDialog(
-                        "Save File", std::string(scene->GetName() + ".yaml").c_str(), 0, NULL, NULL
+                        "Save File", std::string(scene->GetName() + ".yaml").c_str(), 0, nullptr, nullptr
                     );
 
                     if (savePath) Serializer::Serialize(Application::GetInstance()->GetScene(), savePath);
@@ -154,8 +153,8 @@ namespace UI
             // View menu
             if (ImGui::BeginMenu("View"))
             {
-                if (ImGui::MenuItem("Show Toolbar", NULL, true)) { /* Handle Toolbar Toggle */ }
-                if (ImGui::MenuItem("Show Sidebar", NULL, true)) { /* Handle Sidebar Toggle */ }
+                if (ImGui::MenuItem("Show Toolbar", nullptr, true)) { /* Handle Toolbar Toggle */ }
+                if (ImGui::MenuItem("Show Sidebar", nullptr, true)) { /* Handle Sidebar Toggle */ }
                 ImGui::EndMenu();
             }
 
@@ -214,14 +213,14 @@ namespace UI
 
             if (ImGui::TreeNodeEx("Mesh"))
             {
-                ImGui::Text(std::string("Mesh "  + model.GetName()).c_str());
+                ImGui::Text("%s", std::string("Mesh "  + model.GetName()).c_str());
 
                 if (ImGui::Button("Load"))
                 {
                     const char* filters[] = {"*.obj", "*.fbx", "*.gltf"};
 
                     const char* filePath = tinyfd_openFileDialog(
-                        "Select a File", "", 1, filters,  "All Files", NULL);
+                        "Select a File", "", 1, filters,  "All Files", 0);
 
                     if (filePath)
                     {
@@ -245,7 +244,7 @@ namespace UI
 
             if (ImGui::TreeNodeEx("Material"))
             {
-                ImGui::Text(material.Name.c_str());
+                ImGui::Text("%s", material.Name.c_str());
 
                 ImGui::Text("Albedo");
                 ImGui::Image(material.Albedo.GetId(), ImVec2(100, 100));
@@ -256,7 +255,7 @@ namespace UI
                     const char* filters[] = {"*.png", "*.jpg", "*.jpeg"};
 
                     const char* filePath = tinyfd_openFileDialog(
-                        "Select a File", "", 1, filters,  "All Files", NULL);
+                        "Select a File", "", 1, filters,  "All Files", 0);
 
                     if (filePath)
                     {
@@ -280,7 +279,7 @@ namespace UI
 
             if (ImGui::TreeNodeEx("Camera"))
             {
-                ImGui::Text(("Is Primary : " + std::string(camera.IsPrimary()? "Yes" : "No")).c_str());
+                ImGui::Text("%s", ("Is Primary : " + std::string(camera.IsPrimary()? "Yes" : "No")).c_str());
                 if (ImGui::Button("Remove"))
                 {
                     scene->RemoveComponent<Camera>(selected);

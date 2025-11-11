@@ -1,28 +1,25 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.20)
 
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-set(SRC_DIR "src")
-
-# Collect all .cpp files in the src/ directory
 file(GLOB_RECURSE SOURCES "${SRC_DIR}/*.cpp")
 file(GLOB_RECURSE HEADERS "${SRC_DIR}/*.h")
 
-
-
-# Add an executable target with all the source files
 add_executable(Editor ${SOURCES} ${HEADERS})
 
+target_include_directories(Editor PRIVATE ${SRC_DIR})
 
-target_include_directories(Editor PRIVATE "../Core/src")
-target_include_directories(Editor PRIVATE "../lib/GLM")
-target_include_directories(Editor PRIVATE "../lib/ImGui")
-target_include_directories(Editor PRIVATE "../lib/entt")
-target_include_directories(Editor PRIVATE "../lib/TinyFileDialogs")
-target_include_directories(Editor PRIVATE "../lib/ImGuizmo")
+target_link_libraries(Editor
+    PRIVATE
+        Core
+        imgui
+        imguizmo
+        tfd
+)
 
-
-
-target_link_libraries(Editor PRIVATE Core imgui tfd imguizmo)
+if(APPLE)
+    target_compile_definitions(Editor PRIVATE GL_SILENCE_DEPRECATION)
+endif()
 
 add_custom_target(CopyRes
         COMMAND ${CMAKE_COMMAND} -E copy_directory

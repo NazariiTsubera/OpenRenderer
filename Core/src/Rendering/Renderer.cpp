@@ -72,8 +72,8 @@ void Renderer::DrawModel(const Model& model, Material material, const Transform&
 
 		material.Shader.SetUniformMatrix4fv("uModel", transform.GetModel());
 		material.Shader.SetUniformMatrix4fv("uView", camera.GetView());
-		material.Shader.SetUniformMatrix4fv("uProjection", camera.GetProjection());
-		material.Shader.SetUniformMatrix4fv("uTexture", material.Albedo.GetId());
+        material.Shader.SetUniformMatrix4fv("uProjection", camera.GetProjection());
+        material.Shader.SetUniform1i("uTexture", static_cast<int>(material.Albedo.GetIndex()));
 
 
 		PointLight light = sceneLight.PointLights[0];

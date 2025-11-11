@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Events/Events.h"
 #include <functional>
 
@@ -13,7 +12,7 @@ struct FrameStats {
 	void End();
 };
 
-typedef struct GLFWwindow;
+struct GLFWwindow;
 
 struct WindowProps
 {

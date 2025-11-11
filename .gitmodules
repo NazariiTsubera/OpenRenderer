@@ -1,7 +1,0 @@
-[submodule "ImGuizmo"]
-	path = lib/ImGuizmo
-	url = https://github.com/CedricGuillemet/ImGuizmo
-
-[submodule "yaml-cpp"]
-	path = Core/lib/yaml-cpp
-	url = https://github.com/jbeder/yaml-cpp

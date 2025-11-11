@@ -5,6 +5,24 @@
 #include "Serializer.h"
 #include <yaml-cpp/yaml.h>
 #include <Utils.h>
+#include <filesystem>
+
+namespace {
+
+std::shared_ptr<Scene> CreateDefaultScene()
+{
+    auto scene = std::make_shared<Scene>("Default Scene");
+    const glm::vec3 defaultCameraPosition(0.0f, 2.0f, 5.0f);
+    const glm::vec3 defaultCameraRotation(0.0f);
+    const glm::vec3 defaultCameraScale(1.0f);
+
+    entt::entity cameraEntity = scene->CreateEntity("DefaultCamera");
+    scene->AddComponent<Transform>(cameraEntity, defaultCameraPosition, defaultCameraRotation, defaultCameraScale);
+    scene->AddComponent<Camera>(cameraEntity, true);
+    return scene;
+}
+
+} // namespace
 
 
 
@@ -100,7 +118,55 @@ void Serializer::Serialize(Scene* scene, const std::string& filename)
 
 std::shared_ptr<Scene> Serializer::Deserialize(const std::string& filename)
 {
-    YAML::Node root = YAML::LoadFile(filename);
+    auto fallbackScene = [](const std::string& reason) {
+        std::cerr << "[Serializer] " << reason << " Falling back to default scene." << std::endl;
+        return CreateDefaultScene();
+    };
+
+    if (filename.empty())
+        return fallbackScene("Empty scene filename provided.");
+
+    std::filesystem::path scenePath(filename);
+    if (!scenePath.is_absolute())
+    {
+        std::filesystem::path searchRoot = std::filesystem::current_path();
+        bool resolved = false;
+        while (true)
+        {
+            std::filesystem::path candidate = searchRoot / scenePath;
+            if (std::filesystem::exists(candidate))
+            {
+                scenePath = candidate;
+                resolved = true;
+                break;
+            }
+            if (!searchRoot.has_parent_path() || searchRoot.parent_path() == searchRoot)
+                break;
+            searchRoot = searchRoot.parent_path();
+        }
+
+        if (!resolved)
+        {
+            // Combine with current path just for logging clarity
+            scenePath = std::filesystem::current_path() / scenePath;
+        }
+    }
+
+    YAML::Node root;
+    try
+    {
+        if (!std::filesystem::exists(scenePath))
+            return fallbackScene("Scene file not found: " + scenePath.string());
+
+        root = YAML::LoadFile(scenePath.string());
+    }
+    catch (const YAML::Exception& e)
+    {
+        return fallbackScene(std::string("Failed to load scene '") + scenePath.string() + "': " + e.what());
+    }
+
+    if (!root["Scene"])
+        return fallbackScene("Scene file does not contain a 'Scene' node: " + scenePath.string());
 
     std::shared_ptr<Scene> scene = std::make_shared<Scene>(filename);
 
