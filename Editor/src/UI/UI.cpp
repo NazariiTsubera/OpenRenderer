@@ -5,6 +5,7 @@
 #include "UI.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -35,23 +36,17 @@ namespace UI
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-        
-        float fontSize = 22.0f;
-
-        float xscale, yscale;
+        constexpr float baseFontSize = 18.0f;
+        float xscale = 1.0f;
+        float yscale = 1.0f;
         glfwGetWindowContentScale(Window::currentWindow->GetHandle(), &xscale, &yscale);
+        const float dpiScale = std::max(1.0f, 0.5f * (xscale + yscale));
 
-        io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Bold.ttf", fontSize * xscale);
-        io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Regular.ttf", fontSize * xscale);
- 
-
-
-
-        int fbWidth, fbHeight;
-        int winWidth, winHeight;
-        glfwGetFramebufferSize(Window::currentWindow->GetHandle(), &fbWidth, &fbHeight);
-        glfwGetWindowSize(Window::currentWindow->GetHandle(), &winWidth, &winHeight);
-        io.DisplayFramebufferScale = ImVec2((float)fbWidth / winWidth, (float)fbHeight / winHeight);
+        io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Bold.ttf", baseFontSize * dpiScale);
+        io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Regular.ttf", baseFontSize * dpiScale);
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.ScaleAllSizes(dpiScale);
+        io.FontGlobalScale = 1.0f / dpiScale;
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
